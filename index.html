@@ -1,0 +1,164 @@
+<!-- 想必大家都注意到<marquee>的不循环滚动，所以出现了很多替代脚本，或iframe或JS输出<marquee>，
+不管怎么做，都略显麻烦。下面说一下这个相对简单的实现思路：一个设定宽度并且隐藏超出它宽度
+的内容的容器demo，里面放demo1和 demo2，demo1是滚动内容,demo2为demo1的直接克隆，通过不断改
+变demo1的scrollTop或者scrollLeft达到滚动的目的，当滚动至demo1与demo2的交界处时直接跳回初始
+位置，因为demo1与demo2一样，所以分不出跳动的瞬间，从而达到“无缝”滚动的目的。 在原作者的基
+础上做了一定修改，主要还是在样式上面，将表格更换为标签。并且将JavaScript标准化，可以在所有
+浏览器运行。 先了解一下对象的几个的属性： 
+innerHTML:设置或获取位于对象起始和结束标签内的 
+HTML scrollHeight: 获取对象的滚动高度。 
+scrollLeft:设置或获取位于对象左边界和窗口中目前可见内容的最左端之间的距离 
+scrollTop:设置或获取位于对象最顶端和窗口中可见内容的最顶端之间的距离
+scrollWidth:获取对象的滚动宽度
+offsetHeight:获取对象相对于版面或由父坐标 
+offsetParent 属性指定的父坐标的高度 
+offsetLeft:获取对象相对于版面或由 
+offsetParent 属性指定的父坐标的计算左侧位置 
+offsetTop:获取对象相对于版面或由 
+offsetTop 属性指定的父坐标的计算顶端位置 
+offsetWidth:获取对象相对于版面或由父坐标 
+offsetParent 属性指定的父坐标的宽度 图片上无缝滚动 -->
+
+<!DOCTYPE html>
+<html>
+<head lang="en">
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>无缝滚动-两个demo实现</title>
+<style type="text/css">
+    #demo {
+     background: #FFF;
+      overflow:hidden; 
+     border:1px solid red;
+     width:1200px;
+	 height:350px;
+	 margin:0 auto;
+    }
+    #demo img {
+     border: 8px solid #F2F2F2;
+    }
+	
+    #indemo {
+     float: left;
+     width: 8000%;
+    }
+    #demo1 {
+     float: left;
+    }
+    #demo2 {
+     float: left;
+    }
+	.demo_unit {
+     float: left;
+    }
+	.demo_a{
+	 line-height:20px;
+	 display:block;
+	 text-align:center;
+	}
+	style=""
+	<!-- /*媒体查询，参考部分Bootstrap 框架*/ -->
+<!-- /*当页面大于1200px 时，大屏幕，主要是PC 端*/ -->
+@media (min-width: 1200px) {
+	img {
+		width: 100%;
+		height:100%;
+	}
+}
+<!-- /*在992 和1199 像素之间的屏幕里，中等屏幕，分辨率低的PC*/ -->
+@media (min-width: 992px) and (max-width: 1199px) {
+	img {
+		width: 90%;
+		height:90%;
+	}
+
+}
+<!-- /*在768 和991 像素之间的屏幕里，小屏幕，主要是PAD*/ -->
+@media (min-width: 768px) and (max-width: 991px) {
+	img {
+		width: 80%;
+		height:80%;
+	}
+	
+}
+<!-- /*在480 和767 像素之间的屏幕里，超小屏幕，主要是手机*/ -->
+@media (min-width: 480px) and (max-width: 767px) {
+	img {
+		width: 60%;
+		height:60%;
+	}
+	
+}
+<!-- /*在小于480 像素的屏幕，微小屏幕，更低分辨率的手机*/ -->
+@media (max-width: 479px) {
+	
+	img {
+		width: 40%;
+		height:40%;
+	}
+}
+
+</style>
+</head>
+<body>
+    <div id="demo">
+		<div id="indemo">
+			<div id="demo1">
+				<div class="demo_unit" style="valign:middle;align:center; ">
+					<a href="#"><img src="http://p3.qhimg.com/t01f6b07748f7efb8c1.png" border="0" /></a>
+					<a class="demo_a"  href="#">jQuery1</a>
+				</div>
+				<div class="demo_unit" style="valign:middle;align:center; ">
+					<a href="#"><img src="http://p3.qhimg.com/t01f6b07748f7efb8c1.png" border="0" /></a>
+					<a class="demo_a" style="line-height:20px;display:block;text-align:center;" href="#">jQuery2</a>
+				</div>
+				<div class="demo_unit" style="valign:middle;align:center; ">
+					<a href="#"><img src="http://p3.qhimg.com/t01f6b07748f7efb8c1.png" border="0" /></a>
+					<a class="demo_a" style="line-height:20px;display:block;text-align:center;" href="#">jQuery3</a>
+				</div>
+				<div class="demo_unit" style="valign:middle;align:center; ">
+					<a href="#"><img src="http://p3.qhimg.com/t01f6b07748f7efb8c1.png" border="0" /></a>
+					<a class="demo_a" style="line-height:20px;display:block;text-align:center;" href="#">jQuery4</a>
+				</div>
+				<div class="demo_unit" style="valign:middle;align:center; ">
+					<a href="#"><img src="http://p3.qhimg.com/t01f6b07748f7efb8c1.png" border="0" /></a>
+					<a class="demo_a" style="line-height:20px;display:block;text-align:center;" href="#">jQuery5</a>
+				</div>
+			</div>
+			<div id="demo2"></div>
+		</div>
+    </div>
+	
+	<br />
+	<a target="_blank" href="http://wpa.qq.com/msgrd?v=3&uin=1179224887&site=qq&menu=yes"><img border="0" src="http://wpa.qq.com/pa?p=2:510814924:51" alt="点击这里给我发消息" title="点击这里给我发消息"/></a>
+
+<script type="text/javascript">
+<!-- 用JS判断浏览器当前的模式： -->
+document.write(document.compatMode == "CSS1Compat" ? "当前处于标准模式" : "当前处于混杂模式");
+
+    var speed=10; //数字越大速度越慢
+    var tab=document.getElementById("demo");
+    var tab1=document.getElementById("demo1");
+    var tab2=document.getElementById("demo2");
+    tab2.innerHTML=tab1.innerHTML;
+	<!-- alert(tab2.offsetWidth); -->
+    function Marquee(){
+		if(tab.scrollLeft>= tab1.offsetWidth){
+			tab.scrollLeft=0;  //js中offsetWidth是指对象自身的宽度，整型，单位像素（含边线，如滚动条的占用的宽，值会随着内容的输入而不断改变）。
+			                                                 // scrollLeft 代表页面利用滚动条滚动到右侧时，隐藏在滚动条左侧的页面的宽度
+		}
+		else{
+			tab.scrollLeft++;
+		}
+    }
+    var MyMar=window.setInterval(Marquee,speed);
+    tab.onmouseover=function(){
+		window.clearInterval(MyMar)
+	};
+    tab.onmouseout=function(){
+		MyMar=window.setInterval(Marquee,speed)
+	};
+</script>
+</body>
+</html>
+ 
