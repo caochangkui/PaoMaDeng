@@ -1,2 +1,2 @@
-# PaoMaDeng
-跑马灯无缝滚动
+﻿# PaoMaDeng
+纯js实现跑马灯无缝滚动
